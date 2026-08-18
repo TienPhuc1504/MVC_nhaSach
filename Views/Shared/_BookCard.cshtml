@@ -1,0 +1,14 @@
+@model Book
+<article class="book-card">
+    <a class="book-card-media d-block" asp-controller="Books" asp-action="Details" asp-route-id="@Model.Id">
+        @if (Model.ImagePath is not null) { <img src="@Model.ImagePath" class="book-card-cover" alt="Bìa sách @Model.Title" /> }
+        else { <div class="book-cover-placeholder">Bìa sách đang được cập nhật</div> }
+    </a>
+    <div class="card-body d-flex flex-column"><small class="book-category">@Model.Category.Name</small><h3 class="book-title"><a class="text-decoration-none" asp-controller="Books" asp-action="Details" asp-route-id="@Model.Id">@Model.Title</a></h3><p class="small text-muted mb-2">@Model.Author</p>
+        <div class="mt-auto"><div class="book-price">@Model.Price.ToString("N0") đ</div>
+            <div class="book-actions"><a class="small fw-semibold" asp-controller="Books" asp-action="Details" asp-route-id="@Model.Id">Chi tiết →</a>
+                <form asp-controller="Cart" asp-action="Add" method="post"><input type="hidden" name="bookId" value="@Model.Id" /><input type="hidden" name="quantity" value="1" /><input type="hidden" name="returnUrl" value="@(Context.Request.Path + Context.Request.QueryString)" /><button class="btn btn-primary btn-sm" type="submit" disabled="@(Model.StockQuantity < 1 ? "disabled" : null)">@(Model.StockQuantity > 0 ? "Thêm" : "Hết hàng")</button></form>
+            </div>
+        </div>
+    </div>
+</article>

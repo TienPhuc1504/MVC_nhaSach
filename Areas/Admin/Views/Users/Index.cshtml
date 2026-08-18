@@ -1,0 +1,9 @@
+@model IEnumerable<MVC_nhaSach.Areas.Admin.ViewModels.UserRoleViewModel>
+@{ ViewData["Title"] = "Quản lý người dùng"; }
+
+<h1 class="h3 mb-4">Người dùng</h1>
+<div class="table-responsive"><table class="table table-striped align-middle"><thead><tr><th>Email</th><th>Role</th><th class="text-end">Quản lý quyền Admin</th></tr></thead><tbody>
+@foreach (var user in Model) { <tr><td>@user.Email</td><td>@if (user.Roles.Count == 0) { <span class="text-muted">Chưa có role</span> } else { foreach (var role in user.Roles) { <span class="badge bg-secondary me-1">@role</span> } }</td><td class="text-end">
+    <form asp-action="SetAdmin" method="post" class="d-inline"><input type="hidden" name="id" value="@user.Id" /><input type="hidden" name="makeAdmin" value="@(!user.IsAdmin ? "true" : "false")" /><button class="btn btn-sm @(user.IsAdmin ? "btn-outline-danger" : "btn-outline-primary")" type="submit">@(user.IsAdmin ? "Gỡ Admin" : "Cấp Admin")</button></form>
+</td></tr> }
+</tbody></table></div>

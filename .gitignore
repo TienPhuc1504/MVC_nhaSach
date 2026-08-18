@@ -1,0 +1,39 @@
+# Visual Studio / Rider
+.vs/
+.idea/
+*.suo
+*.user
+*.userosscache
+*.sln.docstates
+
+# .NET build output
+[Bb]in/
+[Oo]bj/
+artifacts/
+TestResults/
+
+# Local configuration and secrets
+.env
+.env.*
+!.env.example
+appsettings.*.local.json
+appsettings.Production.json
+secrets.json
+
+# Local databases and logs
+*.db
+*.db-shm
+*.db-wal
+*.mdf
+*.ldf
+*.log
+
+# Report/document working files
+.report-work/
+~$*.docx
+*.tmp
+
+# OS metadata
+.DS_Store
+Thumbs.db
+Desktop.ini

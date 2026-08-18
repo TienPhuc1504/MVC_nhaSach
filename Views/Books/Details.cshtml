@@ -1,0 +1,25 @@
+@model Book
+@{ ViewData["Title"] = Model.Title; }
+
+<div class="row g-5 align-items-start">
+    <div class="col-md-4">
+        <div class="detail-cover">@if (Model.ImagePath is not null) { <img src="@Model.ImagePath" class="img-fluid w-100" alt="Bìa sách @Model.Title" /> }
+        else { <div class="book-cover-placeholder">Bìa sách đang được cập nhật</div> }</div>
+    </div>
+    <div class="col-md-8 detail-panel">
+        @if (Model.IsFeatured) { <span class="section-eyebrow d-block">Sách nổi bật</span> }
+        <h1 class="page-title mb-3">@Model.Title</h1>
+        <p class="lead text-muted">Tác giả: @Model.Author</p>
+        <p>Danh mục: <a asp-action="Index" asp-route-categoryId="@Model.CategoryId">@Model.Category.Name</a></p>
+        <div class="detail-price mb-3">@Model.Price.ToString("N0") đ</div>
+        @if (Model.StockQuantity > 0) { <p class="text-success">Còn @Model.StockQuantity sản phẩm</p> }
+        else { <p class="text-danger">Tạm hết hàng</p> }
+        <h2 class="h5 mt-4">Mô tả</h2><p class="text-break">@(Model.Description ?? "Chưa có mô tả cho sách này.")</p>
+        <form asp-controller="Cart" asp-action="Add" method="post" class="row g-2 align-items-end mt-3">
+            <input type="hidden" name="bookId" value="@Model.Id" /><input type="hidden" name="returnUrl" value="@(Context.Request.Path + Context.Request.QueryString)" />
+            <div class="col-auto"><label for="quantity" class="form-label">Số lượng</label><input id="quantity" name="quantity" type="number" class="form-control" value="1" min="1" max="@Model.StockQuantity" style="width: 100px" /></div>
+            <div class="col-auto"><button class="btn btn-primary btn-lg" type="submit" disabled="@(Model.StockQuantity < 1 ? "disabled" : null)">Thêm vào giỏ hàng</button></div>
+        </form>
+    </div>
+</div>
+<a class="btn btn-link ps-0 mt-4" asp-action="Index">← Quay lại danh sách</a>

@@ -1,0 +1,34 @@
+@model MVC_nhaSach.ViewModels.Home.HomeViewModel
+@{ ViewData["Title"] = "Trang chủ"; }
+
+<section class="bookstore-hero mb-4">
+    <div class="hero-copy">
+        <span class="hero-kicker">Tủ sách được tuyển chọn</span>
+        <h1>Đọc chậm.<br /><em>Sống sâu.</em></h1>
+        <p class="lead mt-4">Một hiệu sách nhỏ trên màn hình, nơi mỗi cuốn sách đều có lý do để xuất hiện.</p>
+        <div class="hero-actions mt-4"><a class="btn btn-light btn-lg px-4" asp-controller="Books" asp-action="Index">Khám phá tủ sách</a><a class="hero-link" asp-controller="Categories" asp-action="Index">Duyệt theo chủ đề →</a></div>
+    </div>
+    <div class="hero-art" aria-hidden="true"><img src="~/images/bookstore-hero.svg" alt="" /></div>
+</section>
+
+<section class="service-strip mb-5" aria-label="Dịch vụ nhà sách">
+    <div><strong>01</strong><span><b>Chọn lọc kỹ</b><small>Sách có thông tin rõ ràng</small></span></div>
+    <div><strong>02</strong><span><b>Đặt hàng gọn</b><small>Giỏ sách lưu theo phiên</small></span></div>
+    <div><strong>03</strong><span><b>Theo dõi dễ</b><small>Trạng thái đơn minh bạch</small></span></div>
+</section>
+
+<div class="row g-4">
+    <aside class="col-lg-3">@await Component.InvokeAsync("CategoryMenu")</aside>
+    <div class="col-lg-9">
+        <section class="mb-5">
+            <div class="section-heading"><div><div class="section-eyebrow">Vừa lên kệ</div><h2>Sách mới nhất</h2></div><a asp-controller="Books" asp-action="Index" asp-route-sort="newest">Xem toàn bộ →</a></div>
+            @if (Model.LatestBooks.Count == 0) { <div class="empty-state">Tủ sách mới đang được cập nhật.</div> }
+            else { <div class="row row-cols-1 row-cols-sm-2 row-cols-xl-4 g-3">@foreach (var book in Model.LatestBooks) { <div class="col"><partial name="_BookCard" model="book" /></div> }</div> }
+        </section>
+        <section>
+            <div class="section-heading"><div><div class="section-eyebrow">Được quan tâm</div><h2>Sách nổi bật</h2></div></div>
+            @if (Model.FeaturedBooks.Count == 0) { <div class="empty-state">Chưa có đầu sách nổi bật trong thời điểm này.</div> }
+            else { <div class="row row-cols-1 row-cols-sm-2 row-cols-xl-4 g-3">@foreach (var book in Model.FeaturedBooks) { <div class="col"><partial name="_BookCard" model="book" /></div> }</div> }
+        </section>
+    </div>
+</div>

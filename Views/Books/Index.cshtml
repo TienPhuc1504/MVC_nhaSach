@@ -1,0 +1,35 @@
+@model MVC_nhaSach.ViewModels.Books.BookSearchViewModel
+@{ ViewData["Title"] = "Danh sách sách"; }
+
+<div class="section-eyebrow">Danh mục đầy đủ</div><h1 class="page-title">Tìm cuốn sách dành cho bạn.</h1>
+<form method="get" asp-action="Index" class="filter-panel mb-5">
+    <div asp-validation-summary="ModelOnly" class="text-danger mb-2"></div>
+    <div class="row g-3">
+        <div class="col-md-4"><label asp-for="Title" class="form-label">Tên sách</label><input asp-for="Title" class="form-control" placeholder="Nhập tên sách" /></div>
+        <div class="col-md-4"><label asp-for="Author" class="form-label">Tác giả</label><input asp-for="Author" class="form-control" placeholder="Nhập tác giả" /></div>
+        <div class="col-md-4"><label asp-for="CategoryId" class="form-label">Danh mục</label><select asp-for="CategoryId" asp-items="Model.Categories" class="form-select"><option value="">Tất cả danh mục</option></select></div>
+        <div class="col-md-3"><label asp-for="MinPrice" class="form-label">Giá từ</label><input asp-for="MinPrice" class="form-control" min="0" /><span asp-validation-for="MinPrice" class="text-danger"></span></div>
+        <div class="col-md-3"><label asp-for="MaxPrice" class="form-label">Giá đến</label><input asp-for="MaxPrice" class="form-control" min="0" /><span asp-validation-for="MaxPrice" class="text-danger"></span></div>
+        <div class="col-md-3"><label asp-for="Sort" class="form-label">Sắp xếp</label><select asp-for="Sort" class="form-select"><option value="newest">Mới nhất</option><option value="price_asc">Giá tăng dần</option><option value="price_desc">Giá giảm dần</option></select></div>
+        <div class="col-md-3 d-flex align-items-end gap-2"><button class="btn btn-primary flex-grow-1" type="submit">Tìm kiếm</button><a class="btn btn-outline-secondary" asp-action="Index">Xóa lọc</a></div>
+    </div>
+</form>
+
+<div class="d-flex justify-content-between mb-3"><span>Tìm thấy <strong>@Model.TotalItems</strong> sách</span>@if (Model.TotalPages > 0) { <span>Trang @Model.Page/@Model.TotalPages</span> }</div>
+@if (Model.Books.Count == 0) { <div class="empty-state"><h2 class="h4">Không tìm thấy sách phù hợp</h2><p class="mb-0">Hãy thử bỏ bớt bộ lọc hoặc tìm bằng từ khóa ngắn hơn.</p></div> }
+else
+{
+    <div class="row row-cols-1 row-cols-sm-2 row-cols-lg-3 row-cols-xl-4 g-4">
+        @foreach (var book in Model.Books) { <div class="col"><partial name="_BookCard" model="book" /></div> }
+    </div>
+}
+
+@if (Model.TotalPages > 1)
+{
+    <nav class="mt-4" aria-label="Phân trang"><ul class="pagination justify-content-center">
+        @for (var pageNumber = 1; pageNumber <= Model.TotalPages; pageNumber++)
+        {
+            <li class="page-item @(pageNumber == Model.Page ? "active" : null)"><a class="page-link" asp-action="Index" asp-route-title="@Model.Title" asp-route-author="@Model.Author" asp-route-categoryId="@Model.CategoryId" asp-route-minPrice="@Model.MinPrice" asp-route-maxPrice="@Model.MaxPrice" asp-route-sort="@Model.Sort" asp-route-page="@pageNumber">@pageNumber</a></li>
+        }
+    </ul></nav>
+}

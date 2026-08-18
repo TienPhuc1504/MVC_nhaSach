@@ -1,0 +1,8 @@
+@model MVC_nhaSach.Areas.Admin.ViewModels.BookFormViewModel
+@{ ViewData["Title"] = "Thêm sách"; }
+<h1 class="h3">Thêm sách</h1>
+<form asp-action="Create" method="post" enctype="multipart/form-data" class="card card-body shadow-sm">
+    <partial name="_Form" model="Model" />
+    <div><button class="btn btn-primary" type="submit">Lưu</button> <a class="btn btn-outline-secondary" asp-action="Index">Quay lại</a></div>
+</form>
+@section Scripts { <partial name="_ValidationScriptsPartial" /> }

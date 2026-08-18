@@ -1,0 +1,22 @@
+@model MVC_nhaSach.ViewModels.Orders.CheckoutViewModel
+@using MVC_nhaSach.Models
+@{
+    ViewData["Title"] = "Đặt hàng";
+    IReadOnlyList<CartItem> cartItems = ViewBag.CartItems as IReadOnlyList<CartItem> ?? Array.Empty<CartItem>();
+    var total = cartItems.Sum(item => item.LineTotal);
+}
+
+<h1 class="h2 mb-4">Thông tin đặt hàng</h1>
+<div class="row g-4">
+    <div class="col-lg-7"><form asp-action="Checkout" method="post" class="card card-body shadow-sm">
+        <div asp-validation-summary="ModelOnly" class="alert alert-danger"></div>
+        <div class="mb-3"><label asp-for="CustomerName" class="form-label"></label><input asp-for="CustomerName" class="form-control" autocomplete="name" /><span asp-validation-for="CustomerName" class="text-danger"></span></div>
+        <div class="mb-3"><label asp-for="Phone" class="form-label"></label><input asp-for="Phone" class="form-control" autocomplete="tel" /><span asp-validation-for="Phone" class="text-danger"></span></div>
+        <div class="mb-3"><label asp-for="Address" class="form-label"></label><textarea asp-for="Address" class="form-control" rows="3" autocomplete="street-address"></textarea><span asp-validation-for="Address" class="text-danger"></span></div>
+        <button class="btn btn-primary btn-lg" type="submit">Xác nhận đặt hàng</button>
+    </form></div>
+    <div class="col-lg-5"><div class="card shadow-sm"><div class="card-header fw-semibold">Đơn hàng của bạn</div><ul class="list-group list-group-flush">
+        @foreach (var item in cartItems) { <li class="list-group-item d-flex justify-content-between"><span>@item.Title × @item.Quantity</span><strong>@item.LineTotal.ToString("N0") đ</strong></li> }
+    </ul><div class="card-body d-flex justify-content-between fs-5"><span>Tổng cộng</span><strong class="text-danger">@total.ToString("N0") đ</strong></div></div></div>
+</div>
+@section Scripts { <partial name="_ValidationScriptsPartial" /> }

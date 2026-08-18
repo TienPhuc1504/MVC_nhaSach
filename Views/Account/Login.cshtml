@@ -1,0 +1,43 @@
+@model MVC_nhaSach.ViewModels.Account.LoginViewModel
+@{
+    ViewData["Title"] = "Đăng nhập";
+}
+
+<section class="auth-shell">
+    <aside class="auth-story">
+        <div class="section-eyebrow">Dành cho người mê sách</div>
+        <h1>Mỗi lần trở lại,<br />tủ sách vẫn ở đây.</h1>
+        <p>Đăng nhập để đặt sách và theo dõi hành trình của từng đơn hàng.</p>
+        <blockquote>“Một căn phòng không có sách giống như một cơ thể không có linh hồn.”</blockquote>
+    </aside>
+    <div class="auth-form-wrap">
+        <div class="auth-form">
+                <span class="auth-step">Chào mừng trở lại</span>
+                <h2>Đăng nhập</h2>
+                <form asp-action="Login" method="post">
+                    <input asp-for="ReturnUrl" type="hidden" />
+                    <div asp-validation-summary="ModelOnly" class="text-danger mb-3"></div>
+                    <div class="mb-3">
+                        <label asp-for="Email" class="form-label"></label>
+                        <input asp-for="Email" class="form-control" autocomplete="email" />
+                        <span asp-validation-for="Email" class="text-danger"></span>
+                    </div>
+                    <div class="mb-3">
+                        <label asp-for="Password" class="form-label"></label>
+                        <input asp-for="Password" class="form-control" autocomplete="current-password" />
+                        <span asp-validation-for="Password" class="text-danger"></span>
+                    </div>
+                    <div class="form-check mb-3">
+                        <input asp-for="RememberMe" class="form-check-input" />
+                        <label asp-for="RememberMe" class="form-check-label"></label>
+                    </div>
+                    <button type="submit" class="btn btn-primary btn-lg w-100">Đăng nhập</button>
+                </form>
+                <p class="mt-3 mb-0">Chưa có tài khoản? <a asp-action="Register">Đăng ký</a></p>
+        </div>
+    </div>
+</section>
+
+@section Scripts {
+    <partial name="_ValidationScriptsPartial" />
+}

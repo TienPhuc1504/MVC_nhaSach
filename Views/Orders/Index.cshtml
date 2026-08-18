@@ -1,0 +1,12 @@
+@model IEnumerable<Order>
+@{ ViewData["Title"] = "Đơn hàng của tôi"; }
+
+<div class="section-eyebrow">Lịch sử mua sách</div><h1 class="page-title">Đơn hàng của tôi</h1>
+@if (!Model.Any()) { <div class="empty-state"><h2>Chưa có đơn hàng</h2><p>Những đơn sách bạn đặt sẽ xuất hiện tại đây.</p><a class="btn btn-primary" asp-controller="Books" asp-action="Index">Tìm sách để đọc</a></div> }
+else
+{
+    <div class="card admin-panel table-responsive"><table class="table align-middle mb-0">
+        <thead><tr><th>Mã đơn</th><th>Ngày đặt</th><th>Sản phẩm</th><th>Tổng tiền</th><th>Trạng thái</th><th></th></tr></thead>
+        <tbody>@foreach (var order in Model) { <tr><td>#@order.Id</td><td>@order.OrderDate.ToLocalTime().ToString("dd/MM/yyyy HH:mm")</td><td>@order.OrderDetails.Sum(item => item.Quantity)</td><td>@order.TotalAmount.ToString("N0") đ</td><td><span class="badge bg-secondary">@order.Status.GetDisplayName()</span></td><td><a class="btn btn-sm btn-outline-primary" asp-action="Details" asp-route-id="@order.Id">Chi tiết</a></td></tr> }</tbody>
+    </table></div>
+}

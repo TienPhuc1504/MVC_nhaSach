@@ -1,0 +1,43 @@
+@model MVC_nhaSach.ViewModels.Account.RegisterViewModel
+@{
+    ViewData["Title"] = "Đăng ký";
+}
+
+<section class="auth-shell">
+    <aside class="auth-story register-story">
+        <div class="section-eyebrow">Bắt đầu từ một cuốn sách</div>
+        <h1>Tạo tủ sách<br />của riêng bạn.</h1>
+        <p>Tài khoản giúp bạn lưu giỏ sách, đặt hàng và xem lại lịch sử mua.</p>
+        <div class="auth-benefits"><span>01 · Đăng ký miễn phí</span><span>02 · Không chia sẻ thông tin</span><span>03 · Theo dõi đơn rõ ràng</span></div>
+    </aside>
+    <div class="auth-form-wrap">
+        <div class="auth-form">
+                <span class="auth-step">Tài khoản mới</span>
+                <h2>Đăng ký</h2>
+                <form asp-action="Register" method="post">
+                    <div asp-validation-summary="ModelOnly" class="text-danger mb-3"></div>
+                    <div class="mb-3">
+                        <label asp-for="Email" class="form-label"></label>
+                        <input asp-for="Email" class="form-control" autocomplete="email" />
+                        <span asp-validation-for="Email" class="text-danger"></span>
+                    </div>
+                    <div class="mb-3">
+                        <label asp-for="Password" class="form-label"></label>
+                        <input asp-for="Password" class="form-control" autocomplete="new-password" />
+                        <span asp-validation-for="Password" class="text-danger"></span>
+                    </div>
+                    <div class="mb-3">
+                        <label asp-for="ConfirmPassword" class="form-label"></label>
+                        <input asp-for="ConfirmPassword" class="form-control" autocomplete="new-password" />
+                        <span asp-validation-for="ConfirmPassword" class="text-danger"></span>
+                    </div>
+                    <button type="submit" class="btn btn-primary btn-lg w-100">Tạo tài khoản</button>
+                </form>
+                <p class="mt-3 mb-0">Đã có tài khoản? <a asp-action="Login">Đăng nhập</a></p>
+        </div>
+    </div>
+</section>
+
+@section Scripts {
+    <partial name="_ValidationScriptsPartial" />
+}

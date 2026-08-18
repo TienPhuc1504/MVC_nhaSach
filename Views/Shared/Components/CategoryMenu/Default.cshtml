@@ -1,0 +1,5 @@
+@model IEnumerable<Category>
+<div class="card category-panel"><div class="card-header">Đọc theo chủ đề</div><div class="list-group list-group-flush">
+    @if (!Model.Any()) { <div class="list-group-item text-muted">Chưa có danh mục.</div> }
+    @foreach (var category in Model) { <a class="list-group-item list-group-item-action" asp-controller="Books" asp-action="Index" asp-route-categoryId="@category.Id">@category.Name</a> }
+</div></div>

@@ -1,0 +1,39 @@
+<!DOCTYPE html>
+<html lang="vi">
+<head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>@ViewData["Title"] - Quản trị nhà sách</title>
+    <link rel="icon" type="image/svg+xml" href="~/favicon.svg" />
+    <link rel="stylesheet" href="~/lib/bootstrap/dist/css/bootstrap.min.css" />
+    <link rel="stylesheet" href="~/css/site.css" asp-append-version="true" />
+</head>
+<body class="admin-body">
+    <a class="skip-link" href="#admin-content">Bỏ qua điều hướng</a>
+    <nav class="navbar navbar-expand-lg admin-header">
+        <div class="container-fluid px-3 px-xl-5">
+            <a class="navbar-brand d-flex align-items-center" asp-area="Admin" asp-controller="Dashboard" asp-action="Index"><span class="brand-mark">N</span>Điều hành nhà sách</a>
+            <div class="navbar-nav me-auto">
+                <a class="nav-link" asp-area="Admin" asp-controller="Categories" asp-action="Index">Danh mục</a>
+                <a class="nav-link" asp-area="Admin" asp-controller="Books" asp-action="Index">Sách</a>
+                <a class="nav-link" asp-area="Admin" asp-controller="Orders" asp-action="Index">Đơn hàng</a>
+                <a class="nav-link" asp-area="Admin" asp-controller="Users" asp-action="Index">Người dùng</a>
+            </div>
+            <div class="navbar-nav ms-auto">
+                <a class="nav-link" asp-area="" asp-controller="Home" asp-action="Index">Về cửa hàng</a>
+                <form asp-area="" asp-controller="Account" asp-action="Logout" method="post">
+                    <button class="nav-link btn btn-link" type="submit">Đăng xuất</button>
+                </form>
+            </div>
+        </div>
+    </nav>
+    <main id="admin-content" class="admin-shell">
+        <partial name="_Alert" />
+        @RenderBody()
+    </main>
+    <script src="~/lib/jquery/dist/jquery.min.js"></script>
+    <script src="~/lib/bootstrap/dist/js/bootstrap.bundle.min.js"></script>
+    <script src="~/js/site.js" asp-append-version="true"></script>
+    @await RenderSectionAsync("Scripts", required: false)
+</body>
+</html>

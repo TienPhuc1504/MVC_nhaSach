@@ -1,0 +1,9 @@
+@model Book
+@{ ViewData["Title"] = "Xóa sách"; }
+<h1 class="h3 text-danger">Xóa sách</h1>
+<div class="alert alert-warning">Bạn có chắc muốn xóa <strong>@Model.Title</strong>?</div>
+@if (Model.OrderDetails.Count > 0) { <div class="alert alert-danger">Sách đã xuất hiện trong đơn hàng nên không thể xóa.</div> }
+<form asp-action="Delete" asp-route-id="@Model.Id" method="post">
+    <button class="btn btn-danger" type="submit" disabled="@(Model.OrderDetails.Count > 0 ? "disabled" : null)">Xác nhận xóa</button>
+    <a class="btn btn-outline-secondary" asp-action="Index">Quay lại</a>
+</form>

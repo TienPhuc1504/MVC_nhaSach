@@ -1,0 +1,16 @@
+@model IEnumerable<Category>
+@{ ViewData["Title"] = "Danh mục sách"; }
+
+<div class="section-eyebrow">Chọn lối đọc</div><h1 class="page-title">Bạn đang tò mò về điều gì?</h1>
+@if (!Model.Any()) { <div class="empty-state">Danh mục sách đang được cập nhật.</div> }
+else
+{
+    <div class="category-grid">
+    @{ var categoryIndex = 0; }
+    @foreach (var category in Model)
+    {
+        categoryIndex++;
+        <article class="category-tile"><span>@categoryIndex.ToString("00")</span><div><h2>@category.Name</h2><p>@(category.Description ?? "Khám phá các đầu sách trong chủ đề này.")</p></div><a asp-controller="Books" asp-action="Index" asp-route-categoryId="@category.Id">@category.Books.Count đầu sách →</a></article>
+    }
+    </div>
+}

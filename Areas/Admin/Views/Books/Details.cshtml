@@ -1,0 +1,13 @@
+@model Book
+@{ ViewData["Title"] = "Chi tiết sách"; }
+<h1 class="h3">Chi tiết sách</h1>
+<div class="card card-body shadow-sm"><div class="row">
+    <div class="col-md-3">@if (Model.ImagePath is not null) { <img src="@Model.ImagePath" alt="Bìa @Model.Title" class="img-fluid rounded" /> } else { <div class="bg-light p-5 text-center">Chưa có ảnh</div> }</div>
+    <dl class="col-md-9 row mb-0">
+        <dt class="col-sm-4">Tên sách</dt><dd class="col-sm-8">@Model.Title</dd><dt class="col-sm-4">Tác giả</dt><dd class="col-sm-8">@Model.Author</dd>
+        <dt class="col-sm-4">Danh mục</dt><dd class="col-sm-8">@Model.Category.Name</dd><dt class="col-sm-4">Giá</dt><dd class="col-sm-8">@Model.Price.ToString("N0") đ</dd>
+        <dt class="col-sm-4">Tồn kho</dt><dd class="col-sm-8">@Model.StockQuantity</dd><dt class="col-sm-4">Nổi bật</dt><dd class="col-sm-8">@(Model.IsFeatured ? "Có" : "Không")</dd>
+        <dt class="col-sm-4">Mô tả</dt><dd class="col-sm-8">@(Model.Description ?? "—")</dd>
+    </dl>
+</div></div>
+<div class="mt-3"><a class="btn btn-primary" asp-action="Edit" asp-route-id="@Model.Id">Sửa</a> <a class="btn btn-outline-secondary" asp-action="Index">Quay lại</a></div>

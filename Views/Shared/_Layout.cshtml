@@ -1,0 +1,65 @@
+﻿<!DOCTYPE html>
+<html lang="vi">
+<head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>@ViewData["Title"] - Nhà sách trực tuyến</title>
+    <meta name="description" content="Nhà sách trực tuyến với danh mục được chọn lọc, đặt hàng nhanh và quản lý đơn thuận tiện." />
+    <link rel="icon" type="image/svg+xml" href="~/favicon.svg" />
+    <script type="importmap"></script>
+    <link rel="stylesheet" href="~/lib/bootstrap/dist/css/bootstrap.min.css" />
+    <link rel="stylesheet" href="~/css/site.css" asp-append-version="true" />
+    <link rel="stylesheet" href="~/MVC_nhaSach.styles.css" asp-append-version="true" />
+</head>
+<body>
+    <a class="skip-link" href="#main-content">Bỏ qua điều hướng</a>
+    <header class="site-header">
+        <nav class="navbar navbar-expand-lg site-nav">
+            <div class="container-fluid px-0">
+                <a class="navbar-brand d-flex align-items-center" asp-area="" asp-controller="Home" asp-action="Index"><span class="brand-mark">N</span>Nhà sách Mộc</a>
+                <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target=".navbar-collapse" aria-controls="navbarSupportedContent"
+                        aria-expanded="false" aria-label="Toggle navigation">
+                    <span class="navbar-toggler-icon"></span>
+                </button>
+                <div class="navbar-collapse collapse d-sm-inline-flex justify-content-between">
+                    <ul class="navbar-nav flex-grow-1">
+                        <li class="nav-item">
+                            <a class="nav-link text-dark" asp-area="" asp-controller="Home" asp-action="Index">Trang chủ</a>
+                        </li>
+                        <li class="nav-item"><a class="nav-link text-dark" asp-area="" asp-controller="Books" asp-action="Index">Sách</a></li>
+                        <li class="nav-item"><a class="nav-link text-dark" asp-area="" asp-controller="Categories" asp-action="Index">Danh mục</a></li>
+                        @if (User.Identity?.IsAuthenticated == true)
+                        {
+                            <li class="nav-item"><a class="nav-link text-dark" asp-area="" asp-controller="Orders" asp-action="Index">Đơn hàng của tôi</a></li>
+                        }
+                        <li class="nav-item">
+                            <a class="nav-link text-dark" asp-area="" asp-controller="Home" asp-action="Privacy">Giới thiệu</a>
+                        </li>
+                    </ul>
+                    <div class="navbar-nav">
+                        @await Component.InvokeAsync("CartSummary")
+                    </div>
+                    <partial name="_LoginPartial" />
+                </div>
+            </div>
+        </nav>
+    </header>
+    <div class="site-shell">
+        <main id="main-content" role="main">
+            <partial name="_Alert" />
+            @RenderBody()
+        </main>
+    </div>
+
+    <footer class="site-footer">
+        <div class="footer-inner">
+            <div><strong>Nhà sách Mộc</strong><br /><small>Sách hay, chọn kỹ, giao tận tay.</small></div>
+            <div><a asp-controller="Home" asp-action="Privacy">Giới thiệu &amp; quyền riêng tư</a><br /><small>&copy; 2026 Nhà sách trực tuyến</small></div>
+        </div>
+    </footer>
+    <script src="~/lib/jquery/dist/jquery.min.js"></script>
+    <script src="~/lib/bootstrap/dist/js/bootstrap.bundle.min.js"></script>
+    <script src="~/js/site.js" asp-append-version="true"></script>
+    @await RenderSectionAsync("Scripts", required: false)
+</body>
+</html>
