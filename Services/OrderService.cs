@@ -58,6 +58,7 @@ public class OrderService(ApplicationDbContext context) : IOrderService
                 CustomerName = checkout.CustomerName.Trim(),
                 Phone = checkout.Phone.Trim(),
                 Address = checkout.Address.Trim(),
+                Note = string.IsNullOrWhiteSpace(checkout.Note) ? null : checkout.Note.Trim(),
                 OrderDate = DateTime.UtcNow,
                 Status = OrderStatus.Pending,
                 UserId = userId

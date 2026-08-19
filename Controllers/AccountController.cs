@@ -110,6 +110,53 @@ public class AccountController(
     }
 
     [HttpGet]
+    [Authorize]
+    public async Task<IActionResult> Profile(bool edit = false)
+    {
+        var user = await userManager.GetUserAsync(User);
+        if (user is null) return Challenge();
+        ViewBag.Email = user.Email;
+        ViewBag.IsEditingProfile = edit;
+        return View(new ProfileViewModel
+        {
+            FullName = user.FullName,
+            Phone = user.PhoneNumber ?? string.Empty,
+            Address = user.ShippingAddress
+        });
+    }
+
+    [HttpPost]
+    [Authorize]
+    [ValidateAntiForgeryToken]
+    public async Task<IActionResult> Profile(ProfileViewModel model)
+    {
+        if (!ModelState.IsValid)
+        {
+            var invalidUser = await userManager.GetUserAsync(User);
+            ViewBag.Email = invalidUser?.Email;
+            ViewBag.IsEditingProfile = true;
+            return View(model);
+        }
+
+        var user = await userManager.GetUserAsync(User);
+        if (user is null) return Challenge();
+        user.FullName = model.FullName.Trim();
+        user.PhoneNumber = model.Phone.Trim();
+        user.ShippingAddress = model.Address.Trim();
+        var result = await userManager.UpdateAsync(user);
+        if (!result.Succeeded)
+        {
+            AddIdentityErrors(result);
+            ViewBag.Email = user.Email;
+            ViewBag.IsEditingProfile = true;
+            return View(model);
+        }
+
+        TempData["SuccessMessage"] = "Đã cập nhật thông tin hồ sơ.";
+        return RedirectToAction(nameof(Profile));
+    }
+
+    [HttpGet]
     [AllowAnonymous]
     public IActionResult AccessDenied() => View();
 

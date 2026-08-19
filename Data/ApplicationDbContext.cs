@@ -39,6 +39,14 @@ public class ApplicationDbContext(DbContextOptions<ApplicationDbContext> options
             .HasIndex(member => member.StudentId)
             .IsUnique();
 
+        builder.Entity<ApplicationUser>()
+            .Property(user => user.FullName)
+            .HasMaxLength(100);
+
+        builder.Entity<ApplicationUser>()
+            .Property(user => user.ShippingAddress)
+            .HasMaxLength(300);
+
         builder.Entity<Order>()
             .Property(order => order.TotalAmount)
             .HasPrecision(18, 2);
@@ -51,6 +59,10 @@ public class ApplicationDbContext(DbContextOptions<ApplicationDbContext> options
         builder.Entity<Order>()
             .Property(order => order.OrderDate)
             .HasDefaultValueSql("GETUTCDATE()");
+
+        builder.Entity<Order>()
+            .Property(order => order.Note)
+            .HasMaxLength(500);
 
         builder.Entity<Order>()
             .HasOne(order => order.User)

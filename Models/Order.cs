@@ -23,6 +23,10 @@ public class Order
     [Display(Name = "Địa chỉ")]
     public string Address { get; set; } = string.Empty;
 
+    [StringLength(500, ErrorMessage = "Ghi chú không được vượt quá 500 ký tự.")]
+    [Display(Name = "Ghi chú đơn hàng")]
+    public string? Note { get; set; }
+
     [Display(Name = "Ngày đặt")]
     public DateTime OrderDate { get; set; } = DateTime.UtcNow;
 

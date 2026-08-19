@@ -50,15 +50,28 @@ public class OrdersController(
             return RedirectToAction("Index", "Cart");
         }
 
-        var user = await userManager.GetUserAsync(User);
-        ViewBag.CartItems = cartService.GetItems();
-        return View(new CheckoutViewModel { Phone = user?.PhoneNumber ?? string.Empty });
+        await PopulateCheckoutViewDataAsync();
+        return View(new CheckoutViewModel());
     }
 
     [HttpPost]
     [ValidateAntiForgeryToken]
     public async Task<IActionResult> Checkout(CheckoutViewModel model)
     {
+        if (model.DeliverToMyself)
+        {
+            var user = await userManager.GetUserAsync(User);
+            model.CustomerName = user?.FullName ?? string.Empty;
+            model.Phone = user?.PhoneNumber ?? string.Empty;
+            model.Address = user?.ShippingAddress ?? string.Empty;
+            ModelState.Clear();
+            TryValidateModel(model);
+            if (!ModelState.IsValid)
+            {
+                ModelState.AddModelError(string.Empty, "Hãy cập nhật đủ thông tin trong hồ sơ trước khi đặt cho bản thân.");
+            }
+        }
+
         var cartItems = cartService.GetItems();
         if (cartItems.Count == 0)
         {
@@ -66,7 +79,7 @@ public class OrdersController(
         }
         if (!ModelState.IsValid)
         {
-            ViewBag.CartItems = cartItems;
+            await PopulateCheckoutViewDataAsync(cartItems);
             return View(model);
         }
 
@@ -82,15 +95,24 @@ public class OrdersController(
         catch (OrderException exception)
         {
             ModelState.AddModelError(string.Empty, exception.Message);
-            ViewBag.CartItems = cartItems;
+            await PopulateCheckoutViewDataAsync(cartItems);
             return View(model);
         }
         catch (Exception exception)
         {
             logger.LogError(exception, "Không thể tạo đơn hàng cho người dùng {UserId}.", userManager.GetUserId(User));
             ModelState.AddModelError(string.Empty, "Không thể hoàn tất đơn hàng lúc này. Vui lòng thử lại.");
-            ViewBag.CartItems = cartItems;
+            await PopulateCheckoutViewDataAsync(cartItems);
             return View(model);
         }
+    }
+
+    private async Task PopulateCheckoutViewDataAsync(IReadOnlyList<CartItem>? cartItems = null)
+    {
+        var user = await userManager.GetUserAsync(User);
+        ViewBag.CartItems = cartItems ?? cartService.GetItems();
+        ViewBag.ProfileName = user?.FullName ?? string.Empty;
+        ViewBag.ProfilePhone = user?.PhoneNumber ?? string.Empty;
+        ViewBag.ProfileAddress = user?.ShippingAddress ?? string.Empty;
     }
 }

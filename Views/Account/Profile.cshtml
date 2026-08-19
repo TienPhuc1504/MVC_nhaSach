@@ -1,0 +1,32 @@
+@model MVC_nhaSach.ViewModels.Account.ProfileViewModel
+@{
+    ViewData["Title"] = "Hồ sơ cá nhân";
+    var isEditing = ViewBag.IsEditingProfile is true;
+    var email = ViewBag.Email as string ?? string.Empty;
+}
+
+<div class="row justify-content-center">
+    <div class="col-lg-7">
+        <div class="d-flex justify-content-between align-items-center mb-4">
+            <h1 class="h2 mb-0">Hồ sơ cá nhân</h1>
+            @if (!isEditing)
+            {
+                <a asp-action="Profile" asp-route-edit="true" class="btn btn-outline-primary" title="Chỉnh sửa hồ sơ" aria-label="Chỉnh sửa hồ sơ">✎ <span class="ms-1">Chỉnh sửa</span></a>
+            }
+        </div>
+        <form asp-action="Profile" method="post" class="card card-body shadow-sm">
+            <p class="text-muted">Thông tin này sẽ được dùng khi bạn chọn “Đặt cho mình”.</p>
+            <div asp-validation-summary="ModelOnly" class="alert alert-danger"></div>
+            <div class="mb-3"><label class="form-label" for="email">Email đăng ký</label><input id="email" class="form-control" value="@email" readonly /></div>
+            <div class="mb-3"><label asp-for="FullName" class="form-label"></label><input asp-for="FullName" class="form-control" autocomplete="name" readonly="@(!isEditing)" /><span asp-validation-for="FullName" class="text-danger"></span></div>
+            <div class="mb-3"><label asp-for="Phone" class="form-label"></label><input asp-for="Phone" class="form-control" autocomplete="tel" readonly="@(!isEditing)" /><span asp-validation-for="Phone" class="text-danger"></span></div>
+            <div class="mb-3"><label asp-for="Address" class="form-label"></label><textarea asp-for="Address" class="form-control" rows="3" autocomplete="street-address" readonly="@(!isEditing)"></textarea><span asp-validation-for="Address" class="text-danger"></span></div>
+            @if (isEditing)
+            {
+                <div class="d-flex gap-2"><button class="btn btn-primary" type="submit">Lưu thay đổi</button><a asp-action="Profile" class="btn btn-outline-secondary">Hủy</a></div>
+            }
+        </form>
+    </div>
+</div>
+
+@section Scripts { <partial name="_ValidationScriptsPartial" /> }
