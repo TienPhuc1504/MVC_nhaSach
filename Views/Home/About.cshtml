@@ -1,0 +1,48 @@
+@model IReadOnlyList<TeamMember>
+@{
+    ViewData["Title"] = "Giới thiệu nhóm LXM";
+}
+
+<section class="about-hero">
+    <div class="about-copy">
+        <span class="section-eyebrow">Đội ngũ thực hiện</span>
+        <h1>Chúng tôi là <em>LXM.</em></h1>
+        <p class="lead">Ba thành viên cùng xây dựng Nhà sách Mộc — một ứng dụng bán sách trực tuyến gọn gàng, dễ sử dụng và đặt trải nghiệm đọc lên hàng đầu.</p>
+    </div>
+    <div class="about-monogram" aria-hidden="true">
+        <span>L</span><span>X</span><span>M</span>
+    </div>
+</section>
+
+<section class="team-section" aria-labelledby="team-heading">
+    <div class="section-heading">
+        <div>
+            <div class="section-eyebrow">Thành viên</div>
+            <h2 id="team-heading">Những người đứng sau dự án</h2>
+        </div>
+        <p class="team-summary">Cùng học hỏi, cùng phát triển và cùng chịu trách nhiệm cho sản phẩm.</p>
+    </div>
+
+    <div class="team-grid">
+        @foreach (var member in Model)
+        {
+            <article class="member-card @(member.BackgroundImagePath is not null ? "has-background" : null)">
+                @if (member.BackgroundImagePath is not null)
+                {
+                    <img class="member-card-background" src="@member.BackgroundImagePath" alt="" aria-hidden="true" />
+                }
+                <div class="member-index">@member.SortOrder.ToString("00")</div>
+                <div class="member-avatar" aria-hidden="true">@member.Initial</div>
+                <div class="member-info">
+                    <h3>@member.FullName</h3>
+                    <p class="member-id">MSSV @member.StudentId</p>
+                </div>
+            </article>
+        }
+    </div>
+</section>
+
+<section class="about-note">
+    <span class="about-note-label">Dự án</span>
+    <p>Nhà sách Mộc được phát triển bằng ASP.NET Core MVC, Entity Framework Core và SQL Server, với mục tiêu kết hợp yêu cầu kỹ thuật của đồ án cùng một trải nghiệm mua sách có bản sắc riêng.</p>
+</section>

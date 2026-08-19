@@ -1,0 +1,52 @@
+@model IReadOnlyList<TeamMember>
+@{
+    ViewData["Title"] = "Quản lý nhóm LXM";
+}
+
+<div class="page-heading">
+    <div>
+        <div class="admin-kicker">Nội dung trang giới thiệu</div>
+        <h1 class="mb-0">Nhóm LXM</h1>
+    </div>
+    <a class="btn btn-outline-primary" asp-area="" asp-controller="Home" asp-action="About">Xem trang giới thiệu</a>
+</div>
+
+<div class="alert alert-info">Ảnh sẽ phủ toàn bộ card thành viên. Nên dùng ảnh ngang hoặc ảnh chân dung có chủ thể ở giữa; chấp nhận JPG, JPEG, PNG, WebP và tối đa 8 MB.</div>
+
+<div class="team-admin-grid">
+    @foreach (var member in Model)
+    {
+        <article class="team-admin-card">
+            <div class="team-admin-preview">
+                @if (member.BackgroundImagePath is not null)
+                {
+                    <img src="@member.BackgroundImagePath" alt="Ảnh nền hiện tại của @member.FullName" />
+                }
+                else
+                {
+                    <span class="team-admin-placeholder">@member.Initial</span>
+                }
+            </div>
+            <div class="team-admin-content">
+                <span class="admin-kicker">Thành viên @member.SortOrder.ToString("00")</span>
+                <h2>@member.FullName</h2>
+                <p class="text-muted">MSSV @member.StudentId</p>
+
+                <form asp-action="UpdateBackground" method="post" enctype="multipart/form-data">
+                    <input type="hidden" name="id" value="@member.Id" />
+                    <label class="form-label" for="background-@member.Id">@(member.BackgroundImagePath is null ? "Chọn ảnh nền" : "Thay ảnh nền")</label>
+                    <input class="form-control mb-3" id="background-@member.Id" name="backgroundImage" type="file" accept=".jpg,.jpeg,.png,.webp" required />
+                    <button class="btn btn-primary" type="submit">@(member.BackgroundImagePath is null ? "Tải ảnh lên" : "Cập nhật ảnh")</button>
+                </form>
+
+                @if (member.BackgroundImagePath is not null)
+                {
+                    <form asp-action="RemoveBackground" method="post" class="mt-2">
+                        <input type="hidden" name="id" value="@member.Id" />
+                        <button class="btn btn-outline-danger" type="submit">Gỡ ảnh nền</button>
+                    </form>
+                }
+            </div>
+        </article>
+    }
+</div>

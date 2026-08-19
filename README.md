@@ -8,7 +8,7 @@
 - Giỏ hàng lưu theo session và quy trình đặt hàng.
 - Đăng ký, đăng nhập và phân quyền `Admin` / `Customer`.
 - Khách hàng xem lịch sử và chi tiết đơn hàng.
-- Admin quản lý sách, danh mục, đơn hàng, người dùng và dashboard thống kê.
+- Admin quản lý sách, danh mục, đơn hàng, người dùng, ảnh nền thành viên nhóm LXM và dashboard thống kê.
 - Dữ liệu mẫu được tạo tự động theo cơ chế idempotent khi ứng dụng khởi động.
 
 ## Công nghệ
@@ -57,7 +57,7 @@ Mở `http://localhost:5241`. Lần chạy đầu, ứng dụng sẽ tự độn
 1. Tạo database `MVCNhaSach` nếu chưa có.
 2. Áp dụng toàn bộ EF Core migrations.
 3. Tạo hai role và các tài khoản demo đã cấu hình.
-4. Thêm danh mục, sách và đơn hàng mẫu.
+4. Thêm danh mục, sách, thành viên nhóm LXM và đơn hàng mẫu.
 
 | Vai trò | Tài khoản | Mật khẩu demo |
 |---|---|---|
@@ -101,4 +101,5 @@ wwwroot/            CSS, JavaScript và hình ảnh tĩnh
 
 - Không commit mật khẩu, User Secrets, file database hoặc cấu hình production.
 - Các file sinh bởi Visual Studio và output `bin`/`obj` đã được loại khỏi Git.
+- Ảnh do Admin tải lên được lưu ngoài source tại `%LOCALAPPDATA%\MVC_nhaSach\uploads` để không làm gián đoạn Hot Reload.
 - Khi triển khai thật, dùng secret manager của nền tảng triển khai và connection string riêng.

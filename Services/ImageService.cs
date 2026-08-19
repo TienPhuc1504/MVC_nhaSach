@@ -3,44 +3,69 @@ namespace MVC_nhaSach.Services;
 public class ImageService(IWebHostEnvironment environment) : IImageService
 {
     public const long MaxFileSize = 2 * 1024 * 1024;
+    public const long MaxTeamBackgroundFileSize = 8 * 1024 * 1024;
     private static readonly HashSet<string> AllowedExtensions =
-        new(StringComparer.OrdinalIgnoreCase) { ".jpg", ".jpeg", ".png" };
+        new(StringComparer.OrdinalIgnoreCase) { ".jpg", ".jpeg", ".png", ".webp" };
 
     public async Task<string> SaveBookImageAsync(
         IFormFile image,
         CancellationToken cancellationToken = default)
+        => await SaveImageAsync(image, "books", "Ảnh bìa", MaxFileSize, cancellationToken);
+
+    public void DeleteBookImage(string? relativePath)
+        => DeleteImage(relativePath, "books");
+
+    public async Task<string> SaveTeamMemberBackgroundAsync(
+        IFormFile image,
+        CancellationToken cancellationToken = default)
+        => await SaveImageAsync(
+            image,
+            "team",
+            "Ảnh nền thành viên",
+            MaxTeamBackgroundFileSize,
+            cancellationToken);
+
+    public void DeleteTeamMemberBackground(string? relativePath)
+        => DeleteImage(relativePath, "team");
+
+    private async Task<string> SaveImageAsync(
+        IFormFile image,
+        string directoryName,
+        string imageLabel,
+        long maxFileSize,
+        CancellationToken cancellationToken)
     {
         if (image.Length == 0)
         {
             throw new InvalidOperationException("Tệp ảnh không có nội dung.");
         }
 
-        if (image.Length > MaxFileSize)
+        if (image.Length > maxFileSize)
         {
-            throw new InvalidOperationException("Ảnh bìa không được vượt quá 2 MB.");
+            var maxFileSizeInMb = maxFileSize / (1024 * 1024);
+            throw new InvalidOperationException($"{imageLabel} không được vượt quá {maxFileSizeInMb} MB.");
         }
 
         var extension = Path.GetExtension(image.FileName);
         if (!AllowedExtensions.Contains(extension))
         {
-            throw new InvalidOperationException("Ảnh bìa chỉ chấp nhận định dạng .jpg, .jpeg hoặc .png.");
+            throw new InvalidOperationException($"{imageLabel} chỉ chấp nhận định dạng JPG, JPEG, PNG hoặc WebP.");
         }
 
         var fileName = $"{Guid.NewGuid():N}{extension.ToLowerInvariant()}";
-        var imageDirectory = Path.Combine(environment.WebRootPath, "images", "books");
+        var imageDirectory = Path.Combine(UploadStorage.RootPath, directoryName);
         Directory.CreateDirectory(imageDirectory);
 
         var destinationPath = Path.Combine(imageDirectory, fileName);
         await using var stream = new FileStream(destinationPath, FileMode.CreateNew);
         await image.CopyToAsync(stream, cancellationToken);
 
-        return $"/images/books/{fileName}";
+        return $"{UploadStorage.RequestPath}/{directoryName}/{fileName}";
     }
 
-    public void DeleteBookImage(string? relativePath)
+    private void DeleteImage(string? relativePath, string directoryName)
     {
-        if (string.IsNullOrWhiteSpace(relativePath) ||
-            !relativePath.StartsWith("/images/books/", StringComparison.OrdinalIgnoreCase))
+        if (string.IsNullOrWhiteSpace(relativePath))
         {
             return;
         }
@@ -51,7 +76,23 @@ public class ImageService(IWebHostEnvironment environment) : IImageService
             return;
         }
 
-        var fullPath = Path.Combine(environment.WebRootPath, "images", "books", fileName);
+        string? fullPath = null;
+        var uploadPrefix = $"{UploadStorage.RequestPath}/{directoryName}/";
+        var legacyPrefix = $"/images/{directoryName}/";
+        if (relativePath.StartsWith(uploadPrefix, StringComparison.OrdinalIgnoreCase))
+        {
+            fullPath = Path.Combine(UploadStorage.RootPath, directoryName, fileName);
+        }
+        else if (relativePath.StartsWith(legacyPrefix, StringComparison.OrdinalIgnoreCase))
+        {
+            fullPath = Path.Combine(environment.WebRootPath, "images", directoryName, fileName);
+        }
+
+        if (fullPath is null)
+        {
+            return;
+        }
+
         if (File.Exists(fullPath))
         {
             File.Delete(fullPath);

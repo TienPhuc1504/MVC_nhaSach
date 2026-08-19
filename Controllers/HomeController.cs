@@ -26,6 +26,14 @@ namespace MVC_nhaSach.Controllers
             return View();
         }
 
+        public async Task<IActionResult> About()
+        {
+            var members = await context.TeamMembers.AsNoTracking()
+                .OrderBy(member => member.SortOrder)
+                .ToListAsync();
+            return View(members);
+        }
+
         [ResponseCache(Duration = 0, Location = ResponseCacheLocation.None, NoStore = true)]
         public IActionResult Error()
         {

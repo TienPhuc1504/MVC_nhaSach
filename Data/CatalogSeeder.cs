@@ -85,6 +85,16 @@ public static class CatalogSeeder
 
         await db.SaveChangesAsync();
 
+        var teamMembers = new[]
+        {
+            new TeamMember { StudentId = "2200010269", FullName = "Vũ Tiến Phúc", Initial = "P", SortOrder = 1 },
+            new TeamMember { StudentId = "2311553022", FullName = "Võ Ngọc Thắng", Initial = "T", SortOrder = 2 },
+            new TeamMember { StudentId = "2200009837", FullName = "Nguyễn Tấn Quý", Initial = "Q", SortOrder = 3 }
+        };
+        var existingStudentIds = await db.TeamMembers.Select(member => member.StudentId).ToHashSetAsync();
+        db.TeamMembers.AddRange(teamMembers.Where(member => !existingStudentIds.Contains(member.StudentId)));
+        await db.SaveChangesAsync();
+
         if (!await db.Orders.AnyAsync())
         {
             var customer = await db.Users.SingleOrDefaultAsync(user => user.Email == "customer@nhasach.local");

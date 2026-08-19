@@ -11,6 +11,7 @@ public class ApplicationDbContext(DbContextOptions<ApplicationDbContext> options
     public DbSet<Book> Books => Set<Book>();
     public DbSet<Order> Orders => Set<Order>();
     public DbSet<OrderDetail> OrderDetails => Set<OrderDetail>();
+    public DbSet<TeamMember> TeamMembers => Set<TeamMember>();
 
     protected override void OnModelCreating(ModelBuilder builder)
     {
@@ -33,6 +34,10 @@ public class ApplicationDbContext(DbContextOptions<ApplicationDbContext> options
         builder.Entity<Book>()
             .Property(book => book.CreatedDate)
             .HasDefaultValueSql("GETUTCDATE()");
+
+        builder.Entity<TeamMember>()
+            .HasIndex(member => member.StudentId)
+            .IsUnique();
 
         builder.Entity<Order>()
             .Property(order => order.TotalAmount)

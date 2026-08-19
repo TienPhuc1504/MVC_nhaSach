@@ -3,6 +3,7 @@ using Microsoft.EntityFrameworkCore;
 using MVC_nhaSach.Data;
 using MVC_nhaSach.Models;
 using MVC_nhaSach.Services;
+using Microsoft.Extensions.FileProviders;
 
 var builder = WebApplication.CreateBuilder(args);
 
@@ -52,6 +53,13 @@ if (!app.Environment.IsDevelopment())
 }
 
 app.UseHttpsRedirection();
+app.UseStaticFiles();
+Directory.CreateDirectory(UploadStorage.RootPath);
+app.UseStaticFiles(new StaticFileOptions
+{
+    FileProvider = new PhysicalFileProvider(UploadStorage.RootPath),
+    RequestPath = UploadStorage.RequestPath
+});
 app.UseRouting();
 
 app.UseSession();

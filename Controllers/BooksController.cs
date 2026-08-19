@@ -8,6 +8,8 @@ namespace MVC_nhaSach.Controllers;
 
 public class BooksController(ApplicationDbContext context) : Controller
 {
+    private const string VietnameseAccentInsensitiveCollation = "Vietnamese_CI_AI";
+
     public async Task<IActionResult> Index(BookSearchViewModel model)
     {
         model.Page = Math.Max(1, model.Page);
@@ -17,8 +19,20 @@ public class BooksController(ApplicationDbContext context) : Controller
         if (model.MinPrice.HasValue && model.MaxPrice.HasValue && model.MinPrice > model.MaxPrice)
             ModelState.AddModelError(string.Empty, "Giá tối thiểu không được lớn hơn giá tối đa.");
         var query = context.Books.AsNoTracking().Include(book => book.Category).AsQueryable();
-        if (!string.IsNullOrWhiteSpace(model.Title)) { var value = model.Title.Trim(); query = query.Where(book => book.Title.Contains(value)); }
-        if (!string.IsNullOrWhiteSpace(model.Author)) { var value = model.Author.Trim(); query = query.Where(book => book.Author.Contains(value)); }
+        if (!string.IsNullOrWhiteSpace(model.Title))
+        {
+            var value = model.Title.Trim();
+            query = query.Where(book => EF.Functions
+                .Collate(book.Title, VietnameseAccentInsensitiveCollation)
+                .Contains(value));
+        }
+        if (!string.IsNullOrWhiteSpace(model.Author))
+        {
+            var value = model.Author.Trim();
+            query = query.Where(book => EF.Functions
+                .Collate(book.Author, VietnameseAccentInsensitiveCollation)
+                .Contains(value));
+        }
         if (model.CategoryId.HasValue) query = query.Where(book => book.CategoryId == model.CategoryId.Value);
         if (model.MinPrice.HasValue) query = query.Where(book => book.Price >= model.MinPrice.Value);
         if (model.MaxPrice.HasValue) query = query.Where(book => book.Price <= model.MaxPrice.Value);
