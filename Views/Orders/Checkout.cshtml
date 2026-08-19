@@ -10,19 +10,38 @@
 <div class="row g-4">
     <div class="col-lg-7"><form asp-action="Checkout" method="post" class="card card-body shadow-sm">
         <div asp-validation-summary="ModelOnly" class="alert alert-danger"></div>
-        <div class="mb-3">
-            <div class="d-flex flex-wrap justify-content-between align-items-center gap-2 mb-2">
-                <label asp-for="CustomerName" class="form-label mb-0"></label>
-                <div class="btn-group btn-group-sm" role="group" aria-label="Chọn người nhận">
+        <fieldset class="recipient-picker">
+            <legend class="recipient-picker__legend">Chọn người nhận</legend>
+            <div class="recipient-picker__options">
                 <input asp-for="DeliverToMyself" class="btn-check" type="radio" value="true" id="deliver-to-myself" autocomplete="off" />
-                <label class="btn btn-outline-primary" for="deliver-to-myself">Đặt cho mình</label>
+                <label class="recipient-option" for="deliver-to-myself">
+                    <span class="recipient-option__icon" aria-hidden="true">
+                        <svg viewBox="0 0 24 24" fill="none"><path d="M12 12.25a4.25 4.25 0 1 0 0-8.5 4.25 4.25 0 0 0 0 8.5ZM4.75 20.25c.7-3.25 3.4-5.5 7.25-5.5s6.55 2.25 7.25 5.5" /></svg>
+                    </span>
+                    <span class="recipient-option__copy">
+                        <strong>Đặt cho mình</strong>
+                        <small>Dùng và lưu thông tin vào hồ sơ</small>
+                    </span>
+                    <span class="recipient-option__status" aria-hidden="true"></span>
+                </label>
+
                 <input asp-for="DeliverToMyself" class="btn-check" type="radio" value="false" id="deliver-to-other" autocomplete="off" checked="@(Model.DeliverToMyself ? null : "checked")" />
-                <label class="btn btn-outline-primary" for="deliver-to-other">Đặt cho người khác</label>
-                </div>
+                <label class="recipient-option" for="deliver-to-other">
+                    <span class="recipient-option__icon" aria-hidden="true">
+                        <svg viewBox="0 0 24 24" fill="none"><path d="M8.5 11a3.5 3.5 0 1 0 0-7 3.5 3.5 0 0 0 0 7ZM2.75 19.75c.55-3.05 2.7-5.25 5.75-5.25 1.25 0 2.35.35 3.25.95M16.5 12.25v7.5M12.75 16h7.5" /></svg>
+                    </span>
+                    <span class="recipient-option__copy">
+                        <strong>Đặt cho người khác</strong>
+                        <small>Chỉ dùng cho đơn hàng này</small>
+                    </span>
+                    <span class="recipient-option__status" aria-hidden="true"></span>
+                </label>
             </div>
+        </fieldset>
+        <div class="mb-3">
+            <label asp-for="CustomerName" class="form-label"></label>
             <input asp-for="CustomerName" class="form-control" autocomplete="name" />
             <span asp-validation-for="CustomerName" class="text-danger"></span>
-            <div class="form-text">Chọn “Đặt cho mình” để tự điền từ hồ sơ cá nhân.</div>
         </div>
         <div class="mb-3"><label asp-for="Phone" class="form-label"></label><input asp-for="Phone" class="form-control" autocomplete="tel" /><span asp-validation-for="Phone" class="text-danger"></span></div>
         <div class="mb-3"><label asp-for="Address" class="form-label"></label><textarea asp-for="Address" class="form-control" rows="3" autocomplete="street-address"></textarea><span asp-validation-for="Address" class="text-danger"></span></div>

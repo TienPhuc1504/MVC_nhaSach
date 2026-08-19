@@ -1,35 +1,135 @@
 @model MVC_nhaSach.ViewModels.Books.BookSearchViewModel
-@{ ViewData["Title"] = "Danh sách sách"; }
-
-<div class="section-eyebrow">Danh mục đầy đủ</div><h1 class="page-title">Tìm cuốn sách dành cho bạn.</h1>
-<form method="get" asp-action="Index" class="filter-panel mb-5">
-    <div asp-validation-summary="ModelOnly" class="text-danger mb-2"></div>
-    <div class="row g-3">
-        <div class="col-md-4"><label asp-for="Title" class="form-label">Tên sách</label><input asp-for="Title" class="form-control" placeholder="Ví dụ: Nha gia kim" /></div>
-        <div class="col-md-4"><label asp-for="Author" class="form-label">Tác giả</label><input asp-for="Author" class="form-control" placeholder="Ví dụ: Nguyen Nhat Anh" /></div>
-        <div class="col-md-4"><label asp-for="CategoryId" class="form-label">Danh mục</label><select asp-for="CategoryId" asp-items="Model.Categories" class="form-select"><option value="">Tất cả danh mục</option></select></div>
-        <div class="col-md-3"><label asp-for="MinPrice" class="form-label">Giá từ</label><input asp-for="MinPrice" class="form-control" min="0" /><span asp-validation-for="MinPrice" class="text-danger"></span></div>
-        <div class="col-md-3"><label asp-for="MaxPrice" class="form-label">Giá đến</label><input asp-for="MaxPrice" class="form-control" min="0" /><span asp-validation-for="MaxPrice" class="text-danger"></span></div>
-        <div class="col-md-3"><label asp-for="Sort" class="form-label">Sắp xếp</label><select asp-for="Sort" class="form-select"><option value="newest">Mới nhất</option><option value="price_asc">Giá tăng dần</option><option value="price_desc">Giá giảm dần</option></select></div>
-        <div class="col-md-3 d-flex align-items-end gap-2"><button class="btn btn-primary flex-grow-1" type="submit">Tìm kiếm</button><a class="btn btn-outline-secondary" asp-action="Index">Xóa lọc</a></div>
-    </div>
-</form>
-
-<div class="d-flex justify-content-between mb-3"><span>Tìm thấy <strong>@Model.TotalItems</strong> sách</span>@if (Model.TotalPages > 0) { <span>Trang @Model.Page/@Model.TotalPages</span> }</div>
-@if (Model.Books.Count == 0) { <div class="empty-state"><h2 class="h4">Không tìm thấy sách phù hợp</h2><p class="mb-0">Hãy thử bỏ bớt bộ lọc hoặc tìm bằng từ khóa ngắn hơn.</p></div> }
-else
-{
-    <div class="row row-cols-1 row-cols-sm-2 row-cols-lg-3 row-cols-xl-4 g-4">
-        @foreach (var book in Model.Books) { <div class="col"><partial name="_BookCard" model="book" /></div> }
-    </div>
+@using MVC_nhaSach.ViewModels.Books
+@{
+    ViewData["Title"] = "Danh sách sách";
+    var hasActiveFilters = !string.IsNullOrWhiteSpace(Model.Query)
+        || Model.CategoryId.HasValue
+        || Model.PriceRanges.Count > 0;
 }
 
-@if (Model.TotalPages > 1)
-{
-    <nav class="mt-4" aria-label="Phân trang"><ul class="pagination justify-content-center">
-        @for (var pageNumber = 1; pageNumber <= Model.TotalPages; pageNumber++)
+<div class="section-eyebrow">Danh mục đầy đủ</div>
+<h1 class="page-title">Tìm cuốn sách dành cho bạn.</h1>
+
+<div class="catalog-layout">
+    <aside class="catalog-sidebar" aria-label="Bộ lọc sách">
+        <form method="get" asp-action="Index" class="catalog-filter-form">
+            <input type="hidden" name="Query" value="@Model.Query" />
+            <input type="hidden" name="Sort" value="@Model.Sort" />
+
+            <section class="catalog-filter-group" aria-labelledby="category-filter-title">
+                <h2 id="category-filter-title">Nhóm sách</h2>
+                <div class="catalog-choice-list">
+                    <input class="catalog-choice-input" type="radio" name="CategoryId" value="" id="category-all" checked="@(!Model.CategoryId.HasValue ? "checked" : null)" />
+                    <label class="catalog-category-choice" for="category-all">Tất cả nhóm sách</label>
+                    @foreach (var category in Model.Categories)
+                    {
+                        var categoryId = $"category-{category.Value}";
+                        <input class="catalog-choice-input" type="radio" name="CategoryId" value="@category.Value" id="@categoryId" checked="@(Model.CategoryId?.ToString() == category.Value ? "checked" : null)" />
+                        <label class="catalog-category-choice" for="@categoryId">@category.Text</label>
+                    }
+                </div>
+            </section>
+
+            <section class="catalog-filter-group" aria-labelledby="price-filter-title">
+                <h2 id="price-filter-title">Khoảng giá</h2>
+                <div class="catalog-choice-list">
+                    @foreach (var option in BookSearchViewModel.PriceOptions)
+                    {
+                        var optionId = $"price-{option.Value}";
+                        <label class="catalog-check-choice" for="@optionId">
+                            <input type="checkbox" name="PriceRanges" value="@option.Value" id="@optionId" checked="@(Model.PriceRanges.Contains(option.Value, StringComparer.OrdinalIgnoreCase) ? "checked" : null)" />
+                            <span aria-hidden="true"></span>
+                            @option.Label
+                        </label>
+                    }
+                </div>
+            </section>
+
+            <button class="btn btn-primary w-100" type="submit">Áp dụng bộ lọc</button>
+            @if (hasActiveFilters)
+            {
+                <a class="catalog-clear-link" asp-action="Index">Xóa toàn bộ bộ lọc</a>
+            }
+        </form>
+    </aside>
+
+    <section class="catalog-results" aria-label="Kết quả tìm kiếm sách">
+        <form method="get" asp-action="Index" class="catalog-toolbar">
+            <input type="hidden" name="CategoryId" value="@Model.CategoryId" />
+            @foreach (var priceRange in Model.PriceRanges)
+            {
+                <input type="hidden" name="PriceRanges" value="@priceRange" />
+            }
+
+            <label class="visually-hidden" asp-for="Query">Tìm theo tên sách hoặc tác giả</label>
+            <div class="catalog-search">
+                <span class="catalog-search__icon" aria-hidden="true">
+                    <svg viewBox="0 0 24 24" fill="none"><circle cx="10.8" cy="10.8" r="6.3" /><path d="m15.5 15.5 4 4" /></svg>
+                </span>
+                <input asp-for="Query" class="form-control" placeholder="Tìm theo tên sách hoặc tác giả" autocomplete="off" />
+                <button class="btn btn-primary" type="submit">Tìm kiếm</button>
+            </div>
+
+            <div class="catalog-result-bar">
+                <p class="catalog-result-count">
+                    Tìm thấy <strong>@Model.TotalItems</strong> cuốn sách
+                    @if (Model.TotalPages > 0)
+                    {
+                        <span>· Trang @Model.Page/@Model.TotalPages</span>
+                    }
+                </p>
+                <div class="catalog-sort">
+                    <label asp-for="Sort">Sắp xếp theo</label>
+                    <select asp-for="Sort" class="form-select" data-catalog-sort>
+                        <option value="newest">Mới nhất</option>
+                        <option value="price_asc">Giá tăng dần</option>
+                        <option value="price_desc">Giá giảm dần</option>
+                        <option value="title_asc">Tên sách A–Z</option>
+                    </select>
+                </div>
+            </div>
+        </form>
+
+        @if (Model.Books.Count == 0)
         {
-            <li class="page-item @(pageNumber == Model.Page ? "active" : null)"><a class="page-link" asp-action="Index" asp-route-title="@Model.Title" asp-route-author="@Model.Author" asp-route-categoryId="@Model.CategoryId" asp-route-minPrice="@Model.MinPrice" asp-route-maxPrice="@Model.MaxPrice" asp-route-sort="@Model.Sort" asp-route-page="@pageNumber">@pageNumber</a></li>
+            <div class="empty-state">
+                <h2 class="h4">Không tìm thấy sách phù hợp</h2>
+                <p class="mb-0">Hãy thử bỏ bớt bộ lọc hoặc tìm bằng từ khóa ngắn hơn.</p>
+            </div>
         }
-    </ul></nav>
+        else
+        {
+            <div class="row row-cols-1 row-cols-sm-2 row-cols-xl-3 g-4">
+                @foreach (var book in Model.Books)
+                {
+                    <div class="col"><partial name="_BookCard" model="book" /></div>
+                }
+            </div>
+        }
+
+        @if (Model.TotalPages > 1)
+        {
+            <form method="get" asp-action="Index" class="catalog-pagination" aria-label="Phân trang">
+                <input type="hidden" name="Query" value="@Model.Query" />
+                <input type="hidden" name="CategoryId" value="@Model.CategoryId" />
+                <input type="hidden" name="Sort" value="@Model.Sort" />
+                @foreach (var priceRange in Model.PriceRanges)
+                {
+                    <input type="hidden" name="PriceRanges" value="@priceRange" />
+                }
+                @for (var pageNumber = 1; pageNumber <= Model.TotalPages; pageNumber++)
+                {
+                    <button class="page-link @(pageNumber == Model.Page ? "active" : null)" type="submit" name="Page" value="@pageNumber" aria-current="@(pageNumber == Model.Page ? "page" : null)">@pageNumber</button>
+                }
+            </form>
+        }
+    </section>
+</div>
+
+@section Scripts {
+    <script>
+        document.querySelector('[data-catalog-sort]')?.addEventListener('change', event => {
+            event.currentTarget.form?.requestSubmit();
+        });
+    </script>
 }

@@ -58,20 +58,6 @@ public class OrdersController(
     [ValidateAntiForgeryToken]
     public async Task<IActionResult> Checkout(CheckoutViewModel model)
     {
-        if (model.DeliverToMyself)
-        {
-            var user = await userManager.GetUserAsync(User);
-            model.CustomerName = user?.FullName ?? string.Empty;
-            model.Phone = user?.PhoneNumber ?? string.Empty;
-            model.Address = user?.ShippingAddress ?? string.Empty;
-            ModelState.Clear();
-            TryValidateModel(model);
-            if (!ModelState.IsValid)
-            {
-                ModelState.AddModelError(string.Empty, "Hãy cập nhật đủ thông tin trong hồ sơ trước khi đặt cho bản thân.");
-            }
-        }
-
         var cartItems = cartService.GetItems();
         if (cartItems.Count == 0)
         {
@@ -86,10 +72,49 @@ public class OrdersController(
         try
         {
             var userId = userManager.GetUserId(User)!;
+            var profileSaved = false;
+            if (model.DeliverToMyself)
+            {
+                var user = await userManager.GetUserAsync(User);
+                if (user is null)
+                {
+                    return Challenge();
+                }
+
+                var fullName = model.CustomerName.Trim();
+                var phone = model.Phone.Trim();
+                var address = model.Address.Trim();
+                var profileChanged = user.FullName != fullName
+                    || user.PhoneNumber != phone
+                    || user.ShippingAddress != address;
+
+                if (profileChanged)
+                {
+                    user.FullName = fullName;
+                    user.PhoneNumber = phone;
+                    user.ShippingAddress = address;
+                    var updateResult = await userManager.UpdateAsync(user);
+                    if (!updateResult.Succeeded)
+                    {
+                        foreach (var error in updateResult.Errors)
+                        {
+                            ModelState.AddModelError(string.Empty, error.Description);
+                        }
+
+                        await PopulateCheckoutViewDataAsync(cartItems);
+                        return View(model);
+                    }
+
+                    profileSaved = true;
+                }
+            }
+
             var orderId = await orderService.PlaceOrderAsync(
                 userId, model, cartItems, HttpContext.RequestAborted);
             cartService.Clear();
-            TempData["SuccessMessage"] = $"Đặt hàng thành công. Mã đơn hàng: #{orderId}.";
+            TempData["SuccessMessage"] = profileSaved
+                ? $"Đặt hàng thành công. Mã đơn hàng: #{orderId}. Thông tin giao hàng đã được lưu vào hồ sơ."
+                : $"Đặt hàng thành công. Mã đơn hàng: #{orderId}.";
             return RedirectToAction(nameof(Details), new { id = orderId });
         }
         catch (OrderException exception)
