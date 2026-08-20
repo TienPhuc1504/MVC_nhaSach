@@ -24,7 +24,12 @@
                     </div>
                     <div class="mb-3">
                         <label asp-for="Password" class="form-label"></label>
-                        <input asp-for="Password" class="form-control" autocomplete="current-password" />
+                        <div class="input-group">
+                            <input asp-for="Password" class="form-control" autocomplete="current-password" />
+                            <button class="btn btn-outline-secondary" type="button" id="toggle-password" aria-label="Hiện mật khẩu" title="Hiện mật khẩu">
+                                <span aria-hidden="true">👁</span>
+                            </button>
+                        </div>
                         <span asp-validation-for="Password" class="text-danger"></span>
                     </div>
                     <div class="form-check mb-3">
@@ -40,4 +45,17 @@
 
 @section Scripts {
     <partial name="_ValidationScriptsPartial" />
+    <script>
+        (() => {
+            const passwordInput = document.getElementById('Password');
+            const toggleButton = document.getElementById('toggle-password');
+            toggleButton.addEventListener('click', () => {
+                const isHidden = passwordInput.type === 'password';
+                passwordInput.type = isHidden ? 'text' : 'password';
+                toggleButton.setAttribute('aria-label', isHidden ? 'Ẩn mật khẩu' : 'Hiện mật khẩu');
+                toggleButton.setAttribute('title', isHidden ? 'Ẩn mật khẩu' : 'Hiện mật khẩu');
+                toggleButton.querySelector('span').textContent = isHidden ? '🙈' : '👁';
+            });
+        })();
+    </script>
 }
