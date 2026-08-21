@@ -30,6 +30,8 @@ secrets.json
 
 # Report/document working files
 .report-work/
+/*.docx
+/*.pdf
 .codex-doc-review/
 extracted_images/
 word/
