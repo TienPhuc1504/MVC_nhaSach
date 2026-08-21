@@ -20,6 +20,7 @@ public class BooksController(ApplicationDbContext context) : Controller
         model.PriceRanges = model.PriceRanges
             .Where(validPriceRanges.Contains)
             .Distinct(StringComparer.OrdinalIgnoreCase)
+            .Take(1)
             .ToList();
 
         var booksQuery = context.Books.AsNoTracking().Include(book => book.Category).AsQueryable();

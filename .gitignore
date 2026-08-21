@@ -30,6 +30,20 @@ secrets.json
 
 # Report/document working files
 .report-work/
+.codex-doc-review/
+extracted_images/
+word/
+generate_report.py
+generate_usecase_svg.py
+make_diagram.py
+make_usecase_diagram.py
+map_images.py
+generated_*diagram*.png
+live_homepage_screenshot.png
+test_diagram.html
+usecase_*.html
+image_map.txt
+*_extracted.txt
 ~$*.docx
 *.tmp
 

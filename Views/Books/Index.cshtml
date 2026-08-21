@@ -2,9 +2,6 @@
 @using MVC_nhaSach.ViewModels.Books
 @{
     ViewData["Title"] = "Danh sách sách";
-    var hasActiveFilters = !string.IsNullOrWhiteSpace(Model.Query)
-        || Model.CategoryId.HasValue
-        || Model.PriceRanges.Count > 0;
 }
 
 <div class="section-eyebrow">Danh mục đầy đủ</div>
@@ -12,7 +9,7 @@
 
 <div class="catalog-layout">
     <aside class="catalog-sidebar" aria-label="Bộ lọc sách">
-        <form method="get" asp-action="Index" class="catalog-filter-form">
+        <form method="get" asp-action="Index" class="catalog-filter-form" data-catalog-filter-form>
             <input type="hidden" name="Query" value="@Model.Query" />
             <input type="hidden" name="Sort" value="@Model.Sort" />
 
@@ -37,7 +34,7 @@
                     {
                         var optionId = $"price-{option.Value}";
                         <label class="catalog-check-choice" for="@optionId">
-                            <input type="checkbox" name="PriceRanges" value="@option.Value" id="@optionId" checked="@(Model.PriceRanges.Contains(option.Value, StringComparer.OrdinalIgnoreCase) ? "checked" : null)" />
+                            <input type="radio" name="PriceRanges" value="@option.Value" id="@optionId" checked="@(Model.PriceRanges.Contains(option.Value, StringComparer.OrdinalIgnoreCase) ? "checked" : null)" />
                             <span aria-hidden="true"></span>
                             @option.Label
                         </label>
@@ -45,11 +42,7 @@
                 </div>
             </section>
 
-            <button class="btn btn-primary w-100" type="submit">Áp dụng bộ lọc</button>
-            @if (hasActiveFilters)
-            {
-                <a class="catalog-clear-link" asp-action="Index">Xóa toàn bộ bộ lọc</a>
-            }
+            <a class="btn btn-outline-secondary w-100" asp-action="Index">Xóa bộ lọc</a>
         </form>
     </aside>
 
@@ -128,6 +121,25 @@
 
 @section Scripts {
     <script>
+        const catalogScrollStorageKey = 'catalog-filter-scroll-position';
+        const savedCatalogScrollPosition = sessionStorage.getItem(catalogScrollStorageKey);
+
+        if (savedCatalogScrollPosition !== null) {
+            sessionStorage.removeItem(catalogScrollStorageKey);
+            const scrollPosition = Number.parseInt(savedCatalogScrollPosition, 10);
+
+            if (Number.isFinite(scrollPosition)) {
+                requestAnimationFrame(() => window.scrollTo(0, scrollPosition));
+            }
+        }
+
+        document.querySelector('[data-catalog-filter-form]')?.addEventListener('change', event => {
+            if (event.target.matches('input[type="radio"]')) {
+                sessionStorage.setItem(catalogScrollStorageKey, window.scrollY.toString());
+                event.currentTarget.requestSubmit();
+            }
+        });
+
         document.querySelector('[data-catalog-sort]')?.addEventListener('change', event => {
             event.currentTarget.form?.requestSubmit();
         });
